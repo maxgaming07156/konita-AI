@@ -1,10 +1,10 @@
 import NextAuth from "next-auth"
 import Google from "next-auth/providers/google"
-import { MongoDBAdapter } from "@auth/mongodb-adapter"
-import clientPromise from "@/lib/mongodb"
+import { PrismaAdapter } from "@auth/prisma-adapter"
+import { prisma } from "@/lib/prisma"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: MongoDBAdapter(clientPromise),
+  adapter: PrismaAdapter(prisma),
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -12,5 +12,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   trustHost: true,
+  callbacks: {
+    session({ session, user }) {
+      // Attach the user id and join date to the session so client components can use them
+      session.user.id = user.id
+      return session
+    },
+  },
 })
-
