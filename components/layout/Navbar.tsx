@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogIn, LogOut } from "lucide-react";
+import { useSession, signIn, signOut } from "next-auth/react";
 import { Logo } from "./Logo";
 import { StreakBadge } from "./StreakBadge";
 import { Button } from "@/components/ui/Button";
@@ -22,6 +24,7 @@ export function Navbar() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 12);
@@ -44,6 +47,7 @@ export function Navbar() {
       <div className="mx-auto flex h-18 max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
         <Logo />
 
+        {/* Desktop nav */}
         <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
           {NAV_LINKS.map((link) => {
             const isActive = pathname === link.href;
@@ -69,13 +73,51 @@ export function Navbar() {
           })}
         </nav>
 
+        {/* Desktop right side */}
         <div className="hidden items-center gap-3 md:flex">
           <StreakBadge />
-          <Link href="/tutor">
-            <Button size="sm">Start Learning</Button>
-          </Link>
+          {status === "loading" ? null : session ? (
+            <>
+              <Link href="/tutor">
+                <Button size="sm">Start Learning</Button>
+              </Link>
+              <button
+                onClick={() => signOut()}
+                className="flex items-center gap-2 rounded-2xl border border-white/10 bg-base-800/80 px-3 py-1.5 text-sm text-mist-300 transition-all hover:border-red-500/30 hover:text-red-300"
+                title="Sign out"
+              >
+                {session.user?.image && (
+                  <Image
+                    src={session.user.image}
+                    alt={session.user.name ?? "User"}
+                    width={24}
+                    height={24}
+                    className="rounded-full"
+                  />
+                )}
+                <span className="max-w-[100px] truncate text-xs font-medium">
+                  {session.user?.name?.split(" ")[0]}
+                </span>
+                <LogOut className="h-3.5 w-3.5" />
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => signIn("google", { callbackUrl: "/tutor" })}
+                className="flex items-center gap-2 rounded-2xl border border-white/10 bg-base-800/80 px-4 py-2 text-sm font-medium text-mist-200 transition-all hover:border-emerald-500/30 hover:text-emerald-300"
+              >
+                <LogIn className="h-4 w-4" />
+                Sign in
+              </button>
+              <Link href="/tutor">
+                <Button size="sm">Start Learning</Button>
+              </Link>
+            </>
+          )}
         </div>
 
+        {/* Mobile hamburger */}
         <button
           type="button"
           onClick={() => setIsMenuOpen((prev) => !prev)}
@@ -87,6 +129,7 @@ export function Navbar() {
         </button>
       </div>
 
+      {/* Mobile menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.nav
@@ -113,9 +156,33 @@ export function Navbar() {
                   {link.label}
                 </Link>
               ))}
-              <Link href="/tutor" className="mt-2">
-                <Button className="w-full">Start Learning</Button>
-              </Link>
+              {session ? (
+                <>
+                  <Link href="/tutor" className="mt-2">
+                    <Button className="w-full">Start Learning</Button>
+                  </Link>
+                  <button
+                    onClick={() => signOut()}
+                    className="mt-2 flex items-center justify-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/5 py-3 text-sm font-medium text-red-300"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => signIn("google", { callbackUrl: "/tutor" })}
+                    className="mt-2 flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-base-800/80 py-3 text-sm font-medium text-mist-200"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    Sign in with Google
+                  </button>
+                  <Link href="/tutor" className="mt-2">
+                    <Button className="w-full">Start Learning</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </motion.nav>
         )}

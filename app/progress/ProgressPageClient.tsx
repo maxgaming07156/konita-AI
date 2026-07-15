@@ -2,12 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { useSession, signIn } from "next-auth/react";
 import {
+  Calendar,
   Download,
   Flame,
   Globe2,
   Languages,
   Layers,
+  LogIn,
   MessagesSquare,
   Star,
   Trophy,
@@ -47,6 +51,7 @@ export function ProgressPageClient() {
   const { stats, streak, isHydrated } = useProgress();
   const { favorites } = useTranslationHistory();
   const { showToast } = useToast();
+  const { data: session } = useSession();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dueCount, setDueCount] = useState(0);
 
@@ -89,6 +94,54 @@ export function ProgressPageClient() {
       className="pt-20 sm:pt-28"
     >
       <Container className="!px-0">
+        {/* Profile Banner */}
+        {session ? (
+          <div className="mb-8 flex items-center gap-5 rounded-3xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+            {session.user?.image && (
+              <Image
+                src={session.user.image}
+                alt={session.user.name ?? "User"}
+                width={64}
+                height={64}
+                className="shrink-0 rounded-full ring-2 ring-emerald-500/30"
+              />
+            )}
+            <div className="min-w-0 flex-1">
+              <p className="font-display text-xl font-semibold text-mist-100 sm:text-2xl">
+                {session.user?.name}
+              </p>
+              <p className="mt-0.5 truncate text-sm text-mist-500">{session.user?.email}</p>
+              {session.user?.image && (
+                <div className="mt-2 flex items-center gap-1.5 text-xs text-mist-600">
+                  <Calendar className="h-3.5 w-3.5" />
+                  <span>Signed in with Google</span>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="mb-8 flex flex-col items-center gap-4 rounded-3xl border border-emerald-500/20 bg-emerald-500/5 p-6 text-center sm:flex-row sm:text-left">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-300">
+              <LogIn className="h-6 w-6" />
+            </div>
+            <div className="flex-1">
+              <p className="font-display text-base font-semibold text-mist-100">Sign in to save your progress</p>
+              <p className="mt-1 text-sm text-mist-500">
+                Your stats are currently stored only in this browser. Sign in with Google to back them up to the cloud.
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => signIn("google")}
+              className="shrink-0"
+            >
+              <LogIn className="h-4 w-4" />
+              Sign in with Google
+            </Button>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           <StatCard icon={<Flame className="h-5 w-5" aria-hidden="true" />} label="Current streak (days)" value={isHydrated ? streak : "\u2014"} />
           <StatCard icon={<Trophy className="h-5 w-5" aria-hidden="true" />} label="Longest streak (days)" value={isHydrated ? stats.longestStreak : "\u2014"} />

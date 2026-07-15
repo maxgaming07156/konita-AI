@@ -5,6 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { AuroraBackground } from "@/components/layout/AuroraBackground";
 import { ToastProvider } from "@/hooks/useToast";
+import { AuthProvider } from "@/components/layout/AuthProvider";
 
 const fontDisplay = Fraunces({
   subsets: ["latin"],
@@ -51,14 +52,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${fontDisplay.variable} ${fontBody.variable} ${fontMono.variable}`} suppressHydrationWarning>
       <body className="font-body" suppressHydrationWarning>
-        <ToastProvider>
-          <AuroraBackground />
-          <div className="relative flex min-h-screen flex-col">
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-        </ToastProvider>
+        <AuthProvider>
+          <ToastProvider>
+            <AuroraBackground />
+            <div className="relative flex min-h-screen flex-col">
+              <Navbar />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </div>
+          </ToastProvider>
+        </AuthProvider>
       </body>
     </html>
   );
