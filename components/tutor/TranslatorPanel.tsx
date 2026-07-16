@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeftRight,
+  BookOpen,
   Copy,
   Download,
   Mic,
@@ -12,6 +13,7 @@ import {
   Star,
   Volume2,
   X,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -44,6 +46,7 @@ interface TranslatorPanelProps {
   voiceRate: number;
   autoSpeak: boolean;
   quickMode?: boolean;
+  onModeChange?: (mode: "quick" | "full") => void;
 }
 
 export function TranslatorPanel({
@@ -59,6 +62,7 @@ export function TranslatorPanel({
   voiceRate,
   autoSpeak,
   quickMode = false,
+  onModeChange,
 }: TranslatorPanelProps) {
   const [quickResult, setQuickResult] = useState<string | null>(null);
   const [text, setText] = useState("");
@@ -334,6 +338,36 @@ export function TranslatorPanel({
             <X className="h-4 w-4" aria-hidden="true" />
             Clear
           </Button>
+
+          {/* Quick / Full Lesson mode toggle — lives inside the card */}
+          <div className="ml-auto flex items-center gap-0.5 rounded-xl border border-white/[0.07] bg-white/[0.02] p-0.5">
+            <button
+              type="button"
+              aria-pressed={quickMode}
+              title="Quick — translation only, instant"
+              className={cn(
+                "flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium transition",
+                quickMode ? "bg-emerald-500/15 text-emerald-300" : "text-mist-500 hover:text-mist-200"
+              )}
+              onClick={() => onModeChange?.("quick")}
+            >
+              <Zap className="h-3 w-3" aria-hidden="true" />
+              Quick
+            </button>
+            <button
+              type="button"
+              aria-pressed={!quickMode}
+              title="Full Lesson — grammar, vocab, tips"
+              className={cn(
+                "flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium transition",
+                !quickMode ? "bg-emerald-500/15 text-emerald-300" : "text-mist-500 hover:text-mist-200"
+              )}
+              onClick={() => onModeChange?.("full")}
+            >
+              <BookOpen className="h-3 w-3" aria-hidden="true" />
+              Full
+            </button>
+          </div>
         </div>
       </Card>
 

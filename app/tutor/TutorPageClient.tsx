@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { BookOpen, Clock, Layers, MessagesSquare, Sparkles, Star, Zap } from "lucide-react";
+import { Clock, Layers, MessagesSquare, Sparkles, Star } from "lucide-react";
 import { Container } from "@/components/ui/Primitives";
 import { BottomSheet } from "@/components/ui/BottomSheet";
 import { XpToast } from "@/components/ui/XpToast";
@@ -135,24 +135,6 @@ export function TutorPageClient() {
         </div>
 
         {/* Quick / Full toggle — only visible on translate tab */}
-        {tab === "translate" && (
-          <div className="mx-auto mb-6 flex max-w-fit items-center gap-1 rounded-xl border border-white/[0.07] bg-white/[0.02] p-1">
-            <ModeButton
-              active={translateMode === "quick"}
-              onClick={() => setTranslateMode("quick")}
-              icon={<Zap className="h-3.5 w-3.5" aria-hidden="true" />}
-              label="Quick"
-              hint="Translation only, instant"
-            />
-            <ModeButton
-              active={translateMode === "full"}
-              onClick={() => setTranslateMode("full")}
-              icon={<BookOpen className="h-3.5 w-3.5" aria-hidden="true" />}
-              label="Full Lesson"
-              hint="Grammar, vocab, tips"
-            />
-          </div>
-        )}
 
         {/* Main layout */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
@@ -171,6 +153,7 @@ export function TutorPageClient() {
                 voiceRate={preferences.voiceRate}
                 autoSpeak={preferences.autoSpeak}
                 quickMode={translateMode === "quick"}
+                onModeChange={setTranslateMode}
               />
             ) : (
               <ConversationMode
@@ -258,28 +241,3 @@ function TabButton({
   );
 }
 
-function ModeButton({
-  active, onClick, icon, label, hint,
-}: {
-  active: boolean;
-  onClick: () => void;
-  icon: React.ReactNode;
-  label: string;
-  hint: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      title={hint}
-      className={cn(
-        "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition",
-        active ? "bg-emerald-500/15 text-emerald-300" : "text-mist-500 hover:text-mist-200"
-      )}
-    >
-      {icon}
-      {label}
-    </button>
-  );
-}

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateJson } from "@/lib/gemini";
+import { generateText } from "@/lib/gemini";
 import { getLanguageByCode } from "@/lib/languages";
 
 export const runtime = "nodejs";
@@ -9,22 +9,6 @@ interface QuickTranslateRequestBody {
   sourceLang: string;
   targetLang: string;
 }
-
-interface QuickTranslateResult {
-  translation: string;
-  detectedSourceLanguage?: string;
-}
-
-const SYSTEM_INSTRUCTION = `You are a precise translation engine. Translate the source text into the target language.
-Return a single JSON object with exactly this shape:
-{
-  "translation": string,
-  "detectedSourceLanguage": string
-}
-Rules:
-- "translation" must be an accurate, natural translation.
-- "detectedSourceLanguage" is the full English name of the detected source language.
-- Respond ONLY with the JSON. No markdown, no code fences, no commentary.`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,12 +23,22 @@ export async function POST(request: NextRequest) {
 
     const source = sourceLang === "auto" ? "auto-detect" : getLanguageByCode(sourceLang).name;
     const target = getLanguageByCode(targetLang).name;
-    const prompt = `Source text: """${text}"""\nSource language: ${source}\nTarget language: ${target}\n\nReturn the JSON.`;
 
-    const result = await generateJson<QuickTranslateResult>(prompt, SYSTEM_INSTRUCTION);
-    return NextResponse.json({ data: result }, { status: 200 });
+    const systemInstruction = `You are a precise translation engine. Translate the source text into ${target}. 
+Reply with ONLY the translated text. No explanations, no quotation marks, no punctuation outside what is part of the translation.`;
+
+    const prompt = `Source language: ${source}\nText to translate: ${text}`;
+
+    const translation = await generateText(prompt, systemInstruction);
+
+    if (!translation) {
+      return NextResponse.json({ error: "No translation returned. Please try again." }, { status: 502 });
+    }
+
+    return NextResponse.json({ data: { translation } }, { status: 200 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Something went wrong.";
-    return NextResponse.json({ error: message }, { status: 502 });
+    const status = message.includes("GEMINI_API_KEY") ? 500 : 502;
+    return NextResponse.json({ error: message }, { status });
   }
 }
