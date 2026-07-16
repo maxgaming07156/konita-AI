@@ -27,6 +27,7 @@ type TranslateMode = "quick" | "full";
 export function TutorPageClient() {
   const searchParams = useSearchParams();
   const autoStartVoice = searchParams.get("voice") === "1";
+  const initialQuery = searchParams.get("q") ?? "";
   const { data: session } = useSession();
 
   const [tab, setTab] = useState<Tab>("translate");
@@ -147,7 +148,7 @@ export function TutorPageClient() {
         {/* Quick / Full toggle — only visible on translate tab */}
 
         {/* Main layout */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
+        <div className="mx-auto max-w-4xl">
           <motion.div key={tab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
             {tab === "translate" ? (
               <TranslatorPanel
@@ -164,6 +165,7 @@ export function TutorPageClient() {
                 autoSpeak={preferences.autoSpeak}
                 quickMode={translateMode === "quick"}
                 onModeChange={setTranslateMode}
+                initialQuery={initialQuery}
               />
             ) : (
               <ConversationMode
@@ -173,16 +175,10 @@ export function TutorPageClient() {
               />
             )}
           </motion.div>
-
-          {/* Desktop sidebar */}
-          <div className="hidden flex-col gap-6 lg:flex">
-            <RecentTranslations items={recent} onSelect={handleSelectRecent} onDelete={deleteRecent} onClear={clearRecent} />
-            <FavoriteWords items={favorites} onDelete={deleteFavorite} />
-          </div>
         </div>
 
-        {/* Mobile floating action buttons */}
-        <div className="fixed bottom-6 right-4 z-30 flex flex-col gap-2 lg:hidden">
+        {/* Floating action buttons (History & Favorites) */}
+        <div className="fixed bottom-6 right-4 z-30 flex flex-col gap-2 sm:bottom-8 sm:right-8">
           <button
             type="button"
             onClick={() => setSheetOpen("favorites")}

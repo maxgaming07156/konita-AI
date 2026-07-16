@@ -47,6 +47,7 @@ interface TranslatorPanelProps {
   autoSpeak: boolean;
   quickMode?: boolean;
   onModeChange?: (mode: "quick" | "full") => void;
+  initialQuery?: string;
 }
 
 export function TranslatorPanel({
@@ -63,9 +64,10 @@ export function TranslatorPanel({
   autoSpeak,
   quickMode = false,
   onModeChange,
+  initialQuery,
 }: TranslatorPanelProps) {
   const [quickResult, setQuickResult] = useState<string | null>(null);
-  const [text, setText] = useState("");
+  const [text, setText] = useState(initialQuery ?? "");
   const { showToast } = useToast();
   const { state, result, error, translate, reset } = useTranslate();
   const { isSupported: speechSupported, isSpeaking, speak, cancel } = useSpeechSynthesis();
@@ -103,6 +105,18 @@ export function TranslatorPanel({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRecord]);
+
+  // Auto-translate on mount if initialQuery is provided
+  useEffect(() => {
+    if (initialQuery && initialQuery.trim().length > 0) {
+      // Need a small timeout to let state settle
+      const timer = setTimeout(() => {
+        void handleTranslate();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialQuery]);
 
   const characterCount = text.length;
   const isOverLimit = characterCount > MAX_CHARACTERS;
