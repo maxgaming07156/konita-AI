@@ -12,11 +12,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   trustHost: true,
-  callbacks: {
-    session({ session, user }) {
-      // Attach the user id and join date to the session so client components can use them
-      session.user.id = user.id
-      return session
-    },
-  },
 })
