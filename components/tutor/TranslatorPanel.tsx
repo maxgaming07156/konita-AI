@@ -43,6 +43,7 @@ interface TranslatorPanelProps {
   autoStartVoice?: boolean;
   voiceRate: number;
   autoSpeak: boolean;
+  quickMode?: boolean;
 }
 
 export function TranslatorPanel({
@@ -57,7 +58,9 @@ export function TranslatorPanel({
   autoStartVoice = false,
   voiceRate,
   autoSpeak,
+  quickMode = false,
 }: TranslatorPanelProps) {
+  const [quickResult, setQuickResult] = useState<string | null>(null);
   const [text, setText] = useState("");
   const { showToast } = useToast();
   const { state, result, error, translate, reset } = useTranslate();
@@ -106,6 +109,39 @@ export function TranslatorPanel({
   async function handleTranslate() {
     if (!canTranslate) return;
     const trimmed = text.trim();
+
+    if (quickMode) {
+      // Fast path: translation only
+      setQuickResult(null);
+      try {
+        const res = await fetch("/api/quick-translate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: trimmed, sourceLang, targetLang }),
+        });
+        const payload = await res.json() as { data?: { translation: string }; error?: string };
+        if (!res.ok || !payload.data) throw new Error(payload.error ?? "Translation failed.");
+        const translation = payload.data.translation;
+        setQuickResult(translation);
+        const record: TranslationRecord = {
+          id: generateId(),
+          sourceText: trimmed,
+          translatedText: translation,
+          sourceLang,
+          targetLang,
+          timestamp: Date.now(),
+        };
+        onTranslated(record);
+        recordTranslationStat(targetLang);
+        if (autoSpeak) speak(translation, toSpeechLocale(targetLang), voiceRate);
+      } catch (err) {
+        showToast(err instanceof Error ? err.message : "Translation failed.", "error");
+      }
+      return;
+    }
+
+    // Full lesson path
+    setQuickResult(null);
     const breakdown = await translate(trimmed, sourceLang, targetLang);
     if (breakdown) {
       const record: TranslationRecord = {
@@ -137,6 +173,7 @@ export function TranslatorPanel({
   function handleClear() {
     setText("");
     reset();
+    setQuickResult(null);
   }
 
   function handleSwap() {
@@ -382,7 +419,18 @@ export function TranslatorPanel({
               </motion.div>
             )}
 
-            {state === "success" && result && (
+            {quickResult && (
+              <motion.div key="quick-result" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <div className="rounded-3xl border border-emerald-400/20 bg-emerald-500/[0.06] p-5">
+                  <p className="text-xs font-medium uppercase tracking-[0.14em] text-emerald-300/80">
+                    {getLanguageByCode(targetLang).name}
+                  </p>
+                  <p className="mt-2 font-display text-2xl leading-snug text-emerald-100">{quickResult}</p>
+                </div>
+              </motion.div>
+            )}
+
+            {state === "success" && result && !quickMode && (
               <motion.div key="success" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col gap-4">
                 <div className="rounded-3xl border border-emerald-400/20 bg-emerald-500/[0.06] p-5">
                   <p className="text-xs font-medium uppercase tracking-[0.14em] text-emerald-300/80">
