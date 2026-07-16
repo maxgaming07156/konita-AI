@@ -44,16 +44,17 @@ async function executeWithRotation<T>(
     try {
       const client = getClient(key);
       return await operation(client);
-    } catch (error: any) {
+    } catch (error: unknown) {
       lastError = error;
       
       // Check if it's a rate limit or quota exceeded error
       // 429 status or RESOURCE_EXHAUSTED
+      const err = error as Record<string, unknown>;
       const isRateLimit = 
-        error?.status === 429 || 
-        error?.status === "RESOURCE_EXHAUSTED" ||
-        error?.message?.includes("429") ||
-        error?.message?.includes("Quota exceeded");
+        err?.status === 429 || 
+        err?.status === "RESOURCE_EXHAUSTED" ||
+        (typeof err?.message === "string" && err.message.includes("429")) ||
+        (typeof err?.message === "string" && err.message.includes("Quota exceeded"));
         
       if (isRateLimit) {
         console.warn(`[Gemini API] Key ending in ...${key.slice(-4)} hit rate limit. Trying next key...`);
