@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Primitives";
 import { AuthPromptModal } from "@/components/ui/AuthPromptModal";
+import { HeroMockupFlow } from "./HeroMockupFlow";
 
 const rise = {
   hidden: { opacity: 0, y: 22 },
@@ -125,6 +126,9 @@ export function Hero() {
             </button>
           </div>
         </motion.div>
+
+        {/* The Cohesive Learning Story Mockup */}
+        <HeroMockupFlow />
       </Container>
       
       <AuthPromptModal 
