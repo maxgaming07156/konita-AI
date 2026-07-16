@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { AuroraBackground } from "@/components/layout/AuroraBackground";
 import { ToastProvider } from "@/hooks/useToast";
 import { AuthProvider } from "@/components/layout/AuthProvider";
+import { GlobalJsonLd } from "@/components/seo/JsonLd";
 
 const fontDisplay = Fraunces({
   subsets: ["latin"],
@@ -34,6 +35,9 @@ export const metadata: Metadata = {
   title: {
     default: "Konita — AI Language Tutor by Knootix AI",
     template: "%s | Konita Tutor AI"
+  },
+  alternates: {
+    canonical: "https://konita-ai.vercel.app",
   },
   description:
     "Konita Tutor AI is the ultimate language learning platform by Knootix AI. Translate text and speech, and instantly receive grammar breakdowns, vocabulary, and pronunciation guides from your personal AI tutor.",
@@ -82,6 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-body" suppressHydrationWarning>
         <AuthProvider>
           <ToastProvider>
+            <GlobalJsonLd />
             <AuroraBackground />
             <div className="relative flex min-h-screen flex-col">
               <Navbar />

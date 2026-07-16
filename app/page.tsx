@@ -3,6 +3,7 @@ import { WordOfTheDay } from "@/components/home/WordOfTheDay";
 import { FeatureGrid } from "@/components/home/FeatureGrid";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { Reviews } from "@/components/home/Reviews";
+import { FaqSection } from "@/components/home/FaqSection";
 import { CtaBanner } from "@/components/home/CtaBanner";
 
 export default function HomePage() {
@@ -13,6 +14,7 @@ export default function HomePage() {
       <FeatureGrid />
       <HowItWorks />
       <Reviews />
+      <FaqSection />
       <CtaBanner />
     </>
   );
