@@ -3,9 +3,13 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Mic, Sparkles } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Primitives";
 import { SoundWave } from "@/components/ui/SoundWave";
+import { AuthPromptModal } from "@/components/ui/AuthPromptModal";
 
 const rise = {
   hidden: { opacity: 0, y: 22 },
@@ -17,6 +21,20 @@ const rise = {
 };
 
 export function Hero() {
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [targetUrl, setTargetUrl] = useState("/tutor");
+
+  const handleAction = (url: string) => {
+    if (!session) {
+      setTargetUrl(url);
+      setShowAuthPrompt(true);
+    } else {
+      router.push(url);
+    }
+  };
+
   return (
     <section className="relative overflow-hidden pb-24 pt-16 sm:pb-32 sm:pt-24">
       <Container className="flex flex-col items-center text-center">
@@ -56,18 +74,14 @@ export function Hero() {
           custom={0.3}
           className="mt-9 flex flex-col items-center gap-3 sm:flex-row"
         >
-          <Link href="/tutor">
-            <Button size="lg" className="group">
-              Start Learning
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-            </Button>
-          </Link>
-          <Link href="/tutor?voice=1">
-            <Button size="lg" variant="secondary" className="group">
-              <Mic className="h-4 w-4" aria-hidden="true" />
-              Try Voice Translation
-            </Button>
-          </Link>
+          <Button size="lg" className="group" onClick={() => handleAction("/tutor")}>
+            Start Learning
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+          </Button>
+          <Button size="lg" variant="secondary" className="group" onClick={() => handleAction("/tutor?voice=1")}>
+            <Mic className="h-4 w-4" aria-hidden="true" />
+            Try Voice Translation
+          </Button>
         </motion.div>
 
         <motion.div
@@ -101,6 +115,14 @@ export function Hero() {
           </div>
         </motion.div>
       </Container>
+      
+      <AuthPromptModal 
+        isOpen={showAuthPrompt} 
+        onClose={() => {
+          setShowAuthPrompt(false);
+          router.push(targetUrl);
+        }} 
+      />
     </section>
   );
 }

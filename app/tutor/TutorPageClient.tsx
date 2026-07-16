@@ -14,9 +14,11 @@ import { ConversationMode } from "@/components/tutor/ConversationMode";
 import { RecentTranslations } from "@/components/tutor/RecentTranslations";
 import { FavoriteWords } from "@/components/tutor/FavoriteWords";
 import { SettingsPopover } from "@/components/tutor/SettingsPopover";
+import { AuthPromptModal } from "@/components/ui/AuthPromptModal";
 import { useTranslationHistory } from "@/hooks/useTranslationHistory";
 import { useProgress } from "@/hooks/useProgress";
 import { DEFAULT_PREFERENCES, getPreferences, savePreferences } from "@/lib/storage";
+import { useSession } from "next-auth/react";
 import type { TranslationRecord, UserPreferences } from "@/types";
 
 type Tab = "translate" | "conversation";
@@ -25,6 +27,7 @@ type TranslateMode = "quick" | "full";
 export function TutorPageClient() {
   const searchParams = useSearchParams();
   const autoStartVoice = searchParams.get("voice") === "1";
+  const { data: session } = useSession();
 
   const [tab, setTab] = useState<Tab>("translate");
   const [translateMode, setTranslateMode] = useState<TranslateMode>("full");
@@ -32,6 +35,8 @@ export function TutorPageClient() {
   const [selectedRecord, setSelectedRecord] = useState<TranslationRecord | null>(null);
   const [xpTrigger, setXpTrigger] = useState(0);
   const [sheetOpen, setSheetOpen] = useState<"recent" | "favorites" | null>(null);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [hasPrompted, setHasPrompted] = useState(false);
 
   const { recent, favorites, addRecent, deleteRecent, clearRecent, addFavorite, deleteFavorite } =
     useTranslationHistory();
@@ -56,6 +61,11 @@ export function TutorPageClient() {
     addRecent(record);
     setSelectedRecord(null);
     setXpTrigger((n) => n + 1);
+    
+    if (!session && !hasPrompted) {
+      setShowAuthPrompt(true);
+      setHasPrompted(true);
+    }
   }
 
   function handleSelectRecent(record: TranslationRecord) {
@@ -213,6 +223,13 @@ export function TutorPageClient() {
 
       {/* XP micro-animation */}
       <XpToast trigger={xpTrigger} streak={streak} />
+      
+      <AuthPromptModal 
+        isOpen={showAuthPrompt} 
+        onClose={() => setShowAuthPrompt(false)} 
+        title="Sign in to save your progress"
+        description="You're currently translating as a guest. Create a free account to save your vocabulary, track your streak, and access your history across all devices."
+      />
     </section>
   );
 }

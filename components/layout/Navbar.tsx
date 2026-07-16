@@ -10,20 +10,24 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import { Logo } from "./Logo";
 import { StreakBadge } from "./StreakBadge";
 import { Button } from "@/components/ui/Button";
+import { AuthPromptModal } from "@/components/ui/AuthPromptModal";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/features", label: "Features" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
-  { href: "/progress", label: "Progress" },
+  { href: "/progress", label: "Progress", authRequired: true },
 ];
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const { data: session, status } = useSession();
 
   useEffect(() => {
@@ -49,7 +53,7 @@ export function Navbar() {
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
-          {NAV_LINKS.map((link) => {
+          {NAV_LINKS.filter(link => !link.authRequired || session).map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
@@ -75,7 +79,7 @@ export function Navbar() {
 
         {/* Desktop right side */}
         <div className="hidden items-center gap-3 md:flex">
-          <StreakBadge />
+          {session && <StreakBadge />}
           {status === "loading" ? null : session ? (
             <>
               <Link href="/tutor">
@@ -110,9 +114,9 @@ export function Navbar() {
                 <LogIn className="h-4 w-4" />
                 Sign in
               </button>
-              <Link href="/tutor">
-                <Button size="sm">Start Learning</Button>
-              </Link>
+              <Button size="sm" onClick={() => setShowAuthPrompt(true)}>
+                Start Learning
+              </Button>
             </>
           )}
         </div>
@@ -141,10 +145,12 @@ export function Navbar() {
             aria-label="Mobile"
           >
             <div className="flex flex-col gap-1 px-5 py-4">
-              <div className="mb-1 flex justify-start">
-                <StreakBadge />
-              </div>
-              {NAV_LINKS.map((link) => (
+              {session && (
+                <div className="mb-1 flex justify-start">
+                  <StreakBadge />
+                </div>
+              )}
+              {NAV_LINKS.filter(link => !link.authRequired || session).map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -178,15 +184,24 @@ export function Navbar() {
                     <LogIn className="h-4 w-4" />
                     Sign in with Google
                   </button>
-                  <Link href="/tutor" className="mt-2">
-                    <Button className="w-full">Start Learning</Button>
-                  </Link>
+                  <div className="mt-2">
+                    <Button className="w-full" onClick={() => { setIsMenuOpen(false); setShowAuthPrompt(true); }}>
+                      Start Learning
+                    </Button>
+                  </div>
                 </>
               )}
             </div>
           </motion.nav>
         )}
       </AnimatePresence>
+      <AuthPromptModal 
+        isOpen={showAuthPrompt} 
+        onClose={() => {
+          setShowAuthPrompt(false);
+          router.push("/tutor");
+        }} 
+      />
     </header>
   );
 }
