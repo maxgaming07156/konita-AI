@@ -34,6 +34,7 @@ export function Hero() {
           custom={0.1}
           className="mt-7 max-w-3xl text-balance font-display text-4xl font-medium leading-[1.08] text-mist-100 sm:text-6xl"
         >
+          <span className="block text-xl text-mist-400 mb-3 sm:text-2xl">Konita Tutor AI by Knootix</span>
           Learn Languages <em className="text-emerald-300 not-italic">Smarter</em> with AI
         </motion.h1>
 
@@ -44,7 +45,7 @@ export function Hero() {
           custom={0.2}
           className="mt-6 max-w-xl text-balance text-lg leading-relaxed text-mist-400"
         >
-          Konita AI turns every translation into a lesson &mdash; grammar, vocabulary, pronunciation,
+          Konita by Knootix AI turns every translation into a lesson &mdash; grammar, vocabulary, pronunciation,
           and real conversation practice, all in one place.
         </motion.p>
 

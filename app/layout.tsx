@@ -30,21 +30,49 @@ const fontMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Konita AI \u2014 Translate \u00b7 Speak \u00b7 Learn",
+  metadataBase: new URL("https://konita-ai.vercel.app"), // Fallback if domain isn't known, standard practice
+  title: {
+    default: "Konita — AI Language Tutor by Knootix AI",
+    template: "%s | Konita Tutor AI"
+  },
   description:
-    "Konita AI is an AI-powered language learning platform combining translation, an AI tutor, speech recognition, text-to-speech, and conversation practice in one app.",
+    "Konita Tutor AI is the ultimate language learning platform by Knootix AI. Translate text and speech, and instantly receive grammar breakdowns, vocabulary, and pronunciation guides from your personal AI tutor.",
   keywords: [
+    "Konita",
+    "Knootix AI",
+    "Konita Tutor Ai",
+    "Konita AI",
     "AI translation",
     "language learning",
-    "AI tutor",
+    "AI language tutor",
     "voice translation",
-    "learn languages",
-    "Konita AI",
+    "learn languages smarter",
   ],
+  authors: [{ name: "Knootix AI" }],
+  creator: "Knootix AI",
   openGraph: {
-    title: "Konita AI \u2014 Translate \u00b7 Speak \u00b7 Learn",
-    description: "Learn languages smarter with an AI tutor built into every translation.",
+    title: "Konita — AI Language Tutor by Knootix AI",
+    description: "Learn languages smarter with Konita Tutor AI. Get grammar, vocabulary, and pronunciation with every translation.",
     type: "website",
+    siteName: "Konita AI",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Konita — AI Language Tutor by Knootix AI",
+    description: "Learn languages smarter with Konita Tutor AI. Get grammar, vocabulary, and pronunciation with every translation.",
+    creator: "@KnootixAI",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 

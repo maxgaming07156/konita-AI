@@ -3,8 +3,8 @@ import { Suspense } from "react";
 import { TutorPageClient } from "./TutorPageClient";
 
 export const metadata: Metadata = {
-  title: "AI Tutor \u2014 Konita AI",
-  description: "Translate, speak, and practice conversation with your personal AI language tutor.",
+  title: "Konita Tutor AI \u2014 Your Personal Language Teacher",
+  description: "Translate, speak, and practice conversation with Konita Tutor AI. Get instant grammar and vocabulary feedback on every translation.",
 };
 
 export default function TutorPage() {

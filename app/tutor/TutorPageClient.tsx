@@ -73,7 +73,7 @@ export function TutorPageClient() {
         {/* Header */}
         <div className="mx-auto mb-8 max-w-2xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/5 px-3.5 py-1.5 text-xs font-medium uppercase tracking-[0.16em] text-emerald-300">
-            AI Tutor
+            Konita Tutor AI
           </span>
           <h1 className="mt-5 font-display text-3xl font-medium text-mist-100 sm:text-4xl">
             Translate, then actually learn it
