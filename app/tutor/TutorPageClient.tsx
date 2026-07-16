@@ -6,7 +6,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { BookOpen, Clock, Layers, MessagesSquare, Sparkles, Star, Zap } from "lucide-react";
 import { Container } from "@/components/ui/Primitives";
-import { Button } from "@/components/ui/Button";
 import { BottomSheet } from "@/components/ui/BottomSheet";
 import { XpToast } from "@/components/ui/XpToast";
 import { cn } from "@/lib/utils";
