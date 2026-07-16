@@ -10,31 +10,31 @@ const JOURNEY_STEPS = [
     icon: Languages,
     title: "Translate",
     description: "Start with what you want to say.",
-    colorClass: "bg-emerald-500/10 text-emerald-400"
+    colorClass: "bg-emerald-500/10 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.2)]"
   },
   {
     icon: BookOpen,
     title: "Understand",
     description: "Learn why it's said that way with instant grammar notes.",
-    colorClass: "bg-blue-500/10 text-blue-400"
+    colorClass: "bg-blue-500/10 text-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.2)]"
   },
   {
     icon: MessageSquareText,
     title: "Practice",
     description: "Use it in a real conversation with your AI tutor.",
-    colorClass: "bg-purple-500/10 text-purple-400"
+    colorClass: "bg-purple-500/10 text-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.2)]"
   },
   {
     icon: Brain,
-    title: "Remember",
+    title: "Review",
     description: "Review automatically with spaced repetition flashcards.",
-    colorClass: "bg-amber-500/10 text-amber-400"
+    colorClass: "bg-amber-500/10 text-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.2)]"
   },
   {
     icon: Sparkles,
     title: "Speak Confidently",
     description: "Own the language naturally, one phrase at a time.",
-    colorClass: "bg-rose-500/10 text-rose-400"
+    colorClass: "bg-rose-500/10 text-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.2)]"
   }
 ];
 
@@ -72,7 +72,7 @@ export function LearningJourney() {
 
                 {/* Node */}
                 <div className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-base-900 shadow-xl md:mx-auto">
-                  <div className={cn("flex h-12 w-12 items-center justify-center rounded-xl", step.colorClass)}>
+                  <div className={cn("flex h-12 w-12 items-center justify-center rounded-xl", step.colorClass, !step.colorClass.includes("shadow") && "shadow-lg")}>
                     <step.icon className="h-6 w-6" aria-hidden="true" />
                   </div>
                 </div>
