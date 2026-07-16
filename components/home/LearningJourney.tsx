@@ -60,11 +60,11 @@ export function LearningJourney() {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.5, delay: index * 0.15 }}
                 className={cn(
-                  "relative flex items-center gap-6 md:gap-8",
+                  "relative flex items-start md:items-center gap-6 md:gap-8",
                   isEven ? "md:flex-row" : "md:flex-row-reverse"
                 )}
               >
-                {/* Desktop Left Side */}
+                {/* Desktop Left Side (Only visible on desktop) */}
                 <div className={cn("hidden flex-1 md:block", isEven ? "text-right" : "text-left")}>
                   <h3 className="font-display text-xl font-medium text-mist-100">{step.title}</h3>
                   <p className="mt-2 text-mist-400">{step.description}</p>
@@ -77,14 +77,14 @@ export function LearningJourney() {
                   </div>
                 </div>
 
-                {/* Mobile text OR Desktop Right Side */}
-                <div className={cn("flex-1", !isEven && "md:hidden")}>
+                {/* Mobile Text (Visible only on mobile) */}
+                <div className="flex-1 md:hidden pt-2">
                   <h3 className="font-display text-xl font-medium text-mist-100">{step.title}</h3>
                   <p className="mt-2 text-mist-400">{step.description}</p>
                 </div>
                 
-                {/* Desktop balancing column */}
-                {isEven && <div className="hidden flex-1 md:block" />}
+                {/* Desktop balancing column (Empty) */}
+                <div className="hidden flex-1 md:block" />
               </motion.div>
             );
           })}
