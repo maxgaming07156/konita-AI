@@ -49,15 +49,22 @@ async function executeWithRotation<T>(
       
       // Check if it's a rate limit or quota exceeded error
       // 429 status or RESOURCE_EXHAUSTED
+      // OR if it's a 503 High Demand / UNAVAILABLE error
       const err = error as Record<string, unknown>;
-      const isRateLimit = 
+      const isRateLimitOrUnavailable = 
         err?.status === 429 || 
         err?.status === "RESOURCE_EXHAUSTED" ||
-        (typeof err?.message === "string" && err.message.includes("429")) ||
-        (typeof err?.message === "string" && err.message.includes("Quota exceeded"));
+        err?.status === 503 ||
+        err?.status === "UNAVAILABLE" ||
+        (typeof err?.message === "string" && (
+          err.message.includes("429") || 
+          err.message.includes("Quota exceeded") ||
+          err.message.includes("503") ||
+          err.message.includes("high demand")
+        ));
         
-      if (isRateLimit) {
-        console.warn(`[Gemini API] Key ending in ...${key.slice(-4)} hit rate limit. Trying next key...`);
+      if (isRateLimitOrUnavailable) {
+        console.warn(`[Gemini API] Key ending in ...${key.slice(-4)} hit rate limit or 503. Trying next key...`);
         continue; // Try the next key in the pool
       }
       
