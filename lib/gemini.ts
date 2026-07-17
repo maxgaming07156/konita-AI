@@ -21,17 +21,19 @@ function getClient(key: string): GoogleGenAI {
   return clients.get(key)!;
 }
 
-// gemini-2.5-flash is free-tier eligible as of mid-2026. Google periodically
-// retires older models (e.g. gemini-2.0-flash was shut down June 1, 2026),
-// so this is overridable via GEMINI_MODEL in .env.local without a code change.
-const MODEL = process.env.GEMINI_MODEL || "gemini-flash-latest";
+// Model fallback list. If the primary model is completely overloaded globally,
+// we automatically gracefully degrade to the lighter, faster 8B model which has much higher capacity.
+const MODELS = [
+  process.env.GEMINI_MODEL || "gemini-1.5-flash",
+  "gemini-1.5-flash-8b"
+];
 
 /**
- * Executes a Gemini API call with automatic fallback across multiple API keys.
- * If a 429 (Too Many Requests / Quota Exceeded) is encountered, it instantly retries with the next key.
+ * Executes a Gemini API call with automatic fallback across multiple API keys AND models.
+ * If a 429 or 503 is encountered, it retries with the next key, and if all keys fail, the next model.
  */
 async function executeWithRotation<T>(
-  operation: (client: GoogleGenAI) => Promise<T>
+  operation: (client: GoogleGenAI, modelName: string) => Promise<T>
 ): Promise<T> {
   const keys = getApiKeys();
   
@@ -40,36 +42,38 @@ async function executeWithRotation<T>(
   
   let lastError: unknown;
 
-  for (const key of shuffledKeys) {
-    try {
-      const client = getClient(key);
-      return await operation(client);
-    } catch (error: unknown) {
-      lastError = error;
-      
-      // Check if it's a rate limit or quota exceeded error
-      // 429 status or RESOURCE_EXHAUSTED
-      // OR if it's a 503 High Demand / UNAVAILABLE error
-      const err = error as Record<string, unknown>;
-      const isRateLimitOrUnavailable = 
-        err?.status === 429 || 
-        err?.status === "RESOURCE_EXHAUSTED" ||
-        err?.status === 503 ||
-        err?.status === "UNAVAILABLE" ||
-        (typeof err?.message === "string" && (
-          err.message.includes("429") || 
-          err.message.includes("Quota exceeded") ||
-          err.message.includes("503") ||
-          err.message.includes("high demand")
-        ));
+  for (const model of MODELS) {
+    for (const key of shuffledKeys) {
+      try {
+        const client = getClient(key);
+        return await operation(client, model);
+      } catch (error: unknown) {
+        lastError = error;
         
-      if (isRateLimitOrUnavailable) {
-        console.warn(`[Gemini API] Key ending in ...${key.slice(-4)} hit rate limit or 503. Trying next key...`);
-        continue; // Try the next key in the pool
+        // Check if it's a rate limit or quota exceeded error
+        // 429 status or RESOURCE_EXHAUSTED
+        // OR if it's a 503 High Demand / UNAVAILABLE error
+        const err = error as Record<string, unknown>;
+        const isRateLimitOrUnavailable = 
+          err?.status === 429 || 
+          err?.status === "RESOURCE_EXHAUSTED" ||
+          err?.status === 503 ||
+          err?.status === "UNAVAILABLE" ||
+          (typeof err?.message === "string" && (
+            err.message.includes("429") || 
+            err.message.includes("Quota exceeded") ||
+            err.message.includes("503") ||
+            err.message.includes("high demand")
+          ));
+          
+        if (isRateLimitOrUnavailable) {
+          console.warn(`[Gemini API] Key ending in ...${key.slice(-4)} hit rate limit or 503 on ${model}. Trying next...`);
+          continue; // Try the next key or model
+        }
+        
+        // If it's not a rate limit error, throw immediately (e.g., bad prompt)
+        throw error;
       }
-      
-      // If it's not a rate limit error, throw immediately (e.g., bad prompt)
-      throw error;
     }
   }
 
@@ -112,9 +116,9 @@ function formatGeminiError(error: unknown): Error {
 export async function generateJson<T>(prompt: string, systemInstruction: string): Promise<T> {
   let response;
   try {
-    response = await executeWithRotation(async (client) => {
+    response = await executeWithRotation(async (client, modelName) => {
       return await client.models.generateContent({
-        model: MODEL,
+        model: modelName,
         contents: prompt,
         config: {
           systemInstruction,
@@ -144,9 +148,9 @@ export async function generateJson<T>(prompt: string, systemInstruction: string)
 export async function generateText(prompt: string, systemInstruction: string): Promise<string> {
   let response;
   try {
-    response = await executeWithRotation(async (client) => {
+    response = await executeWithRotation(async (client, modelName) => {
       return await client.models.generateContent({
-        model: MODEL,
+        model: modelName,
         contents: prompt,
         config: {
           systemInstruction,
