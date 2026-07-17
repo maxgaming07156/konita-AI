@@ -11,7 +11,9 @@ function getApiKeys(): string[] {
       "GEMINI_API_KEY or GEMINI_API_KEYS is not configured. Add it to your .env.local file."
     );
   }
-  return keysStr.split(",").map(k => k.trim()).filter(Boolean);
+  const rawKeys = keysStr.split(",").map(k => k.trim()).filter(Boolean);
+  // Deduplicate keys in case the user accidentally pastes the same key multiple times
+  return Array.from(new Set(rawKeys));
 }
 
 function getClient(key: string): GoogleGenAI {
@@ -21,11 +23,10 @@ function getClient(key: string): GoogleGenAI {
   return clients.get(key)!;
 }
 
-// Model fallback list. If the primary model is completely overloaded globally,
-// we automatically gracefully degrade to the lighter, faster 8B model which has much higher capacity.
+// Model fallback list. We rely purely on the fast Flash model to avoid
+// the extremely tight rate limits (2 RPM) of the Pro model.
 const MODELS = [
-  process.env.GEMINI_MODEL || "gemini-flash-latest",
-  "gemini-pro-latest"
+  process.env.GEMINI_MODEL || "gemini-flash-latest"
 ];
 
 /**
