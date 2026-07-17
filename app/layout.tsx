@@ -8,6 +8,7 @@ import { ToastProvider } from "@/hooks/useToast";
 import { AuthProvider } from "@/components/layout/AuthProvider";
 import { GlobalJsonLd } from "@/components/seo/JsonLd";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
+import { ThemeProvider } from "@/components/layout/ThemeProvider";
 
 const fontDisplay = Fraunces({
   subsets: ["latin"],
@@ -32,7 +33,7 @@ const fontMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://konita-ai.vercel.app"), // Fallback if domain isn't known, standard practice
+  metadataBase: new URL("https://konita-ai.vercel.app"),
   title: {
     default: "Konita — AI Language Tutor by Knootix AI",
     template: "%s | Konita Tutor AI"
@@ -85,19 +86,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${fontDisplay.variable} ${fontBody.variable} ${fontMono.variable}`} suppressHydrationWarning>
       <body className="font-body" suppressHydrationWarning>
-        <SmoothScroll>
-          <AuthProvider>
-            <ToastProvider>
-              <GlobalJsonLd />
-              <AuroraBackground />
-              <div className="relative flex min-h-screen flex-col">
-                <Navbar />
-                <main className="flex-1">{children}</main>
-                <Footer />
-              </div>
-            </ToastProvider>
-          </AuthProvider>
-        </SmoothScroll>
+        <ThemeProvider>
+          <SmoothScroll>
+            <AuthProvider>
+              <ToastProvider>
+                <GlobalJsonLd />
+                <AuroraBackground />
+                <div className="relative flex min-h-screen flex-col">
+                  <Navbar />
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                </div>
+              </ToastProvider>
+            </AuthProvider>
+          </SmoothScroll>
+        </ThemeProvider>
       </body>
     </html>
   );

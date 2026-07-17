@@ -3,6 +3,72 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* LIGHT MODE (White/Gray palette) */
+    /* Base background (inverted) */
+    --color-base-950: 255 255 255; /* #FFFFFF */
+    --color-base-900: 248 250 252; /* #F8FAFC */
+    --color-base-800: 241 245 249; /* #F1F5F9 */
+    --color-base-700: 226 232 240; /* #E2E8F0 */
+    --color-base-600: 203 213 225; /* #CBD5E1 */
+
+    /* Mist text (inverted to dark) */
+    --color-mist-100: 15 23 42;    /* #0F172A */
+    --color-mist-200: 51 65 85;    /* #334155 */
+    --color-mist-300: 71 85 105;   /* #475569 */
+    --color-mist-400: 100 116 139; /* #64748B */
+    --color-mist-500: 148 163 184; /* #94A3B8 */
+    --color-mist-600: 203 213 225; /* #CBD5E1 */
+    --color-mist-700: 226 232 240; /* #E2E8F0 */
+    --color-mist-800: 241 245 249; /* #F1F5F9 */
+
+    /* Emerald (darkened for light mode contrast) */
+    --color-emerald-950: 240 253 244;
+    --color-emerald-900: 220 252 231;
+    --color-emerald-800: 187 247 208;
+    --color-emerald-700: 134 239 172;
+    --color-emerald-600: 74 222 128;
+    --color-emerald-500: 16 185 129; /* Darker than dark mode */
+    --color-emerald-400: 5 150 105;  /* Darker than dark mode */
+    --color-emerald-300: 4 120 87;
+    --color-emerald-200: 2 44 34;
+
+    /* Semantic core */
+    --color-white: 0 0 0;          /* Invert white utilities to black! */
+    --color-black: 255 255 255;
+  }
+
+  .dark {
+    /* DARK MODE (Original palette) */
+    --color-base-950: 5 14 11;     /* #050E0B */
+    --color-base-900: 8 23 19;     /* #081713 */
+    --color-base-800: 13 33 27;    /* #0D211B */
+    --color-base-700: 19 46 37;    /* #132E25 */
+    --color-base-600: 27 62 50;    /* #1B3E32 */
+
+    --color-mist-100: 241 251 246; /* #F1FBF6 */
+    --color-mist-200: 216 245 232; /* #D8F5E8 */
+    --color-mist-300: 175 232 206; /* #AFE8CE */
+    --color-mist-400: 124 214 176; /* #7CD6B0 */
+    --color-mist-500: 75 191 145;  /* #4BBF91 */
+    --color-mist-600: 51 161 118;  /* #33A176 */
+    --color-mist-700: 36 128 92;   /* #24805C */
+    --color-mist-800: 25 102 73;   /* #196649 */
+
+    --color-emerald-950: 3 32 21;  /* #032015 */
+    --color-emerald-900: 5 68 49;  /* #054431 */
+    --color-emerald-800: 10 104 71;/* #0A6847 */
+    --color-emerald-700: 15 138 95;/* #0F8A5F */
+    --color-emerald-600: 22 168 118;/* #16A876 */
+    --color-emerald-500: 34 197 142;/* #22C58E */
+    --color-emerald-400: 79 219 168;/* #4FDBA8 */
+    --color-emerald-300: 132 232 194;/* #84E8C2 */
+    --color-emerald-200: 184 244 220;/* #B8F4DC */
+
+    --color-white: 255 255 255;
+    --color-black: 0 0 0;
+  }
+
   * {
     @apply border-white/10;
   }

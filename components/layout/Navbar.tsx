@@ -11,6 +11,7 @@ import { Logo } from "./Logo";
 import { StreakBadge } from "./StreakBadge";
 import { Button } from "@/components/ui/Button";
 import { AuthPromptModal } from "@/components/ui/AuthPromptModal";
+import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
@@ -79,6 +80,7 @@ export function Navbar() {
 
         {/* Desktop right side */}
         <div className="hidden items-center gap-3 md:flex">
+          <ThemeSwitcher />
           {session && <StreakBadge />}
           {status === "loading" ? null : session ? (
             <>
@@ -121,16 +123,19 @@ export function Navbar() {
           )}
         </div>
 
-        {/* Mobile hamburger */}
-        <button
-          type="button"
-          onClick={() => setIsMenuOpen((prev) => !prev)}
-          className="flex h-10 w-10 items-center justify-center rounded-xl text-mist-200 md:hidden"
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={isMenuOpen}
-        >
-          {isMenuOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
-        </button>
+        {/* Mobile hamburger & Theme Switcher */}
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeSwitcher />
+          <button
+            type="button"
+            onClick={() => setIsMenuOpen((prev) => !prev)}
+            className="flex h-10 w-10 items-center justify-center rounded-xl text-mist-200"
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isMenuOpen}
+          >
+            {isMenuOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
