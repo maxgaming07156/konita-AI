@@ -66,22 +66,59 @@ async function executeWithRotation<T>(
     }
   }
 
-  // If we exhausted all keys, throw the last rate limit error
+// If we exhausted all keys, throw the last rate limit error
   throw lastError;
 }
 
+/**
+ * Extracts a user-friendly error message from a raw Gemini API error.
+ */
+function formatGeminiError(error: unknown): Error {
+  if (error instanceof Error) {
+    let msg = error.message;
+    
+    // Try to extract JSON if it's embedded in the error message
+    const jsonMatch = msg.match(/\{.*\}/);
+    if (jsonMatch) {
+      try {
+        const parsed = JSON.parse(jsonMatch[0]);
+        if (parsed?.error?.message) {
+          msg = parsed.error.message;
+        }
+      } catch {
+        // Ignore parsing errors
+      }
+    }
+
+    if (msg.includes("503") || msg.includes("UNAVAILABLE") || msg.includes("high demand") || msg.includes("overloaded")) {
+      return new Error("Konita is currently experiencing high demand. Please try again in a few moments.");
+    }
+    if (msg.includes("429") || msg.includes("Quota exceeded") || msg.includes("RESOURCE_EXHAUSTED")) {
+      return new Error("Konita is currently at capacity. Please try again in a few moments.");
+    }
+
+    return new Error(msg);
+  }
+  return new Error("An unexpected error occurred with the AI. Please try again.");
+}
+
 export async function generateJson<T>(prompt: string, systemInstruction: string): Promise<T> {
-  const response = await executeWithRotation(async (client) => {
-    return await client.models.generateContent({
-      model: MODEL,
-      contents: prompt,
-      config: {
-        systemInstruction,
-        responseMimeType: "application/json",
-        temperature: 0.4,
-      },
+  let response;
+  try {
+    response = await executeWithRotation(async (client) => {
+      return await client.models.generateContent({
+        model: MODEL,
+        contents: prompt,
+        config: {
+          systemInstruction,
+          responseMimeType: "application/json",
+          temperature: 0.4,
+        },
+      });
     });
-  });
+  } catch (error) {
+    throw formatGeminiError(error);
+  }
 
   const raw = response.text ?? "";
   const cleaned = raw.replace(/```json\s*|```\s*/g, "").trim();
@@ -98,16 +135,21 @@ export async function generateJson<T>(prompt: string, systemInstruction: string)
 }
 
 export async function generateText(prompt: string, systemInstruction: string): Promise<string> {
-  const response = await executeWithRotation(async (client) => {
-    return await client.models.generateContent({
-      model: MODEL,
-      contents: prompt,
-      config: {
-        systemInstruction,
-        temperature: 0.7,
-      },
+  let response;
+  try {
+    response = await executeWithRotation(async (client) => {
+      return await client.models.generateContent({
+        model: MODEL,
+        contents: prompt,
+        config: {
+          systemInstruction,
+          temperature: 0.7,
+        },
+      });
     });
-  });
+  } catch (error) {
+    throw formatGeminiError(error);
+  }
 
   return (response.text ?? "").trim();
 }
