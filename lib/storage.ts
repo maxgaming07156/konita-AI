@@ -44,6 +44,31 @@ function isBrowser(): boolean {
   return typeof window !== "undefined";
 }
 
+let syncTimeout: ReturnType<typeof setTimeout> | null = null;
+
+export function triggerBackgroundSync() {
+  if (!isBrowser()) return;
+  // Debounce the sync to avoid spamming the API on rapid changes (like SRS reviews)
+  if (syncTimeout) clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(() => {
+    const bundle = exportAllData();
+    fetch("/api/sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bundle),
+    })
+      .then(async (res) => {
+        if (res.ok) {
+          const payload = await res.json() as { data?: ExportBundle };
+          if (payload.data) {
+             importAllData(payload.data, true); // Prevent infinite sync loop by passing a flag
+          }
+        }
+      })
+      .catch((e) => console.error("Background sync failed:", e));
+  }, 1000);
+}
+
 export function getRecentTranslations(): TranslationRecord[] {
   if (!isBrowser()) return [];
   return safeParse<TranslationRecord[]>(localStorage.getItem(KEYS.recent), []);
@@ -54,17 +79,24 @@ export function saveRecentTranslation(record: TranslationRecord): TranslationRec
   const updated = [record, ...current].slice(0, MAX_RECENT);
   if (isBrowser()) {
     localStorage.setItem(KEYS.recent, JSON.stringify(updated));
+    triggerBackgroundSync();
   }
   return updated;
 }
 
 export function clearRecentTranslations(): void {
-  if (isBrowser()) localStorage.removeItem(KEYS.recent);
+  if (isBrowser()) {
+    localStorage.removeItem(KEYS.recent);
+    triggerBackgroundSync();
+  }
 }
 
 export function removeRecentTranslation(id: string): TranslationRecord[] {
   const updated = getRecentTranslations().filter((r) => r.id !== id);
-  if (isBrowser()) localStorage.setItem(KEYS.recent, JSON.stringify(updated));
+  if (isBrowser()) {
+    localStorage.setItem(KEYS.recent, JSON.stringify(updated));
+    triggerBackgroundSync();
+  }
   return updated;
 }
 
@@ -80,13 +112,19 @@ export function addFavoriteWord(word: FavoriteWord): FavoriteWord[] {
   );
   const withSrs: FavoriteWord = { srsBox: 0, srsDueAt: Date.now(), ...word };
   const updated = exists ? current : [withSrs, ...current];
-  if (isBrowser()) localStorage.setItem(KEYS.favorites, JSON.stringify(updated));
+  if (isBrowser()) {
+    localStorage.setItem(KEYS.favorites, JSON.stringify(updated));
+    triggerBackgroundSync();
+  }
   return updated;
 }
 
 export function removeFavoriteWord(id: string): FavoriteWord[] {
   const updated = getFavoriteWords().filter((f) => f.id !== id);
-  if (isBrowser()) localStorage.setItem(KEYS.favorites, JSON.stringify(updated));
+  if (isBrowser()) {
+    localStorage.setItem(KEYS.favorites, JSON.stringify(updated));
+    triggerBackgroundSync();
+  }
   return updated;
 }
 
@@ -98,7 +136,10 @@ export function isWordFavorited(word: string, targetLang: string): boolean {
 
 export function updateFavoriteSrs(id: string, box: number, dueAt: number): FavoriteWord[] {
   const updated = getFavoriteWords().map((f) => (f.id === id ? { ...f, srsBox: box, srsDueAt: dueAt } : f));
-  if (isBrowser()) localStorage.setItem(KEYS.favorites, JSON.stringify(updated));
+  if (isBrowser()) {
+    localStorage.setItem(KEYS.favorites, JSON.stringify(updated));
+    triggerBackgroundSync();
+  }
   return updated;
 }
 
@@ -108,7 +149,10 @@ export function getPreferences(): UserPreferences {
 }
 
 export function savePreferences(prefs: UserPreferences): void {
-  if (isBrowser()) localStorage.setItem(KEYS.preferences, JSON.stringify(prefs));
+  if (isBrowser()) {
+    localStorage.setItem(KEYS.preferences, JSON.stringify(prefs));
+    triggerBackgroundSync();
+  }
 }
 
 export function getStats(): Stats {
@@ -117,7 +161,10 @@ export function getStats(): Stats {
 }
 
 function saveStats(stats: Stats): void {
-  if (isBrowser()) localStorage.setItem(KEYS.stats, JSON.stringify(stats));
+  if (isBrowser()) {
+    localStorage.setItem(KEYS.stats, JSON.stringify(stats));
+    triggerBackgroundSync();
+  }
 }
 
 export function getActivityDates(): string[] {
@@ -205,7 +252,7 @@ export function exportAllData(): ExportBundle {
   };
 }
 
-export function importAllData(bundle: unknown): void {
+export function importAllData(bundle: unknown, isFromSync = false): void {
   if (!isBrowser()) return;
 
   if (typeof bundle !== "object" || bundle === null) {
@@ -225,4 +272,8 @@ export function importAllData(bundle: unknown): void {
   if (Array.isArray(data.activity)) localStorage.setItem(KEYS.activity, JSON.stringify(data.activity));
 
   window.dispatchEvent(new Event(ACTIVITY_UPDATED_EVENT));
+  
+  if (!isFromSync) {
+    triggerBackgroundSync();
+  }
 }

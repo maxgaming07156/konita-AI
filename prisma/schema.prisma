@@ -48,8 +48,13 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
 
-  accounts Account[]
-  sessions Session[]
+  accounts     Account[]
+  sessions     Session[]
+  translations TranslationRecord[]
+  favorites    FavoriteWord[]
+  preferences  UserPreference?
+  stats        Stats?
+  activity     Activity[]
 }
 
 model VerificationToken {
@@ -58,4 +63,70 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// ─── App Data Models ──────────────────────────────────────────────────────────
+
+model TranslationRecord {
+  id             String   @id @default(cuid())
+  userId         String
+  sourceText     String
+  translatedText String
+  sourceLang     String
+  targetLang     String
+  timestamp      BigInt
+  tutorData      Json?    // Stores the TutorBreakdown object
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, timestamp(sort: Desc)])
+}
+
+model FavoriteWord {
+  id          String   @id @default(cuid())
+  userId      String
+  word        String
+  translation String
+  sourceLang  String
+  targetLang  String
+  meaning     String?
+  timestamp   BigInt
+  srsBox      Int      @default(0)
+  srsDueAt    BigInt?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, word, targetLang])
+}
+
+model UserPreference {
+  id                String @id @default(cuid())
+  userId            String @unique
+  defaultSourceLang String @default("auto")
+  defaultTargetLang String @default("es")
+  autoSpeak         Boolean @default(false)
+  voiceRate         Float   @default(1.0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Stats {
+  id                        String @id @default(cuid())
+  userId                    String @unique
+  totalTranslations         Int    @default(0)
+  totalConversationMessages Int    @default(0)
+  languagesPracticed        String[] // Array of language codes
+  longestStreak             Int    @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Activity {
+  id     String @id @default(cuid())
+  userId String
+  date   String // "YYYY-MM-DD" format
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
 }
