@@ -22,7 +22,7 @@ import { AutoResizeTextarea } from "@/components/ui/AutoResizeTextarea";
 import { SoundWave } from "@/components/ui/SoundWave";
 import { EmptyState, ErrorState, Skeleton } from "@/components/ui/Primitives";
 import { TutorBreakdownView } from "./TutorBreakdownView";
-import { useTranslate } from "@/hooks/useTranslate";
+import { useTranslate, type AIProvider } from "@/hooks/useTranslate";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 import { useToast } from "@/hooks/useToast";
@@ -69,7 +69,7 @@ export function TranslatorPanel({
   const [quickResult, setQuickResult] = useState<string | null>(null);
   const [text, setText] = useState(initialQuery ?? "");
   const { showToast } = useToast();
-  const { state, result, error, translate, reset } = useTranslate();
+  const { state, result, error, provider, setProvider, translate, reset } = useTranslate();
   const { isSupported: speechSupported, isSpeaking, speak, cancel } = useSpeechSynthesis();
 
   const recognitionLang = toSpeechLocale(sourceLang === "auto" ? "en" : sourceLang);
@@ -353,34 +353,61 @@ export function TranslatorPanel({
             Clear
           </Button>
 
-          {/* Quick / Full Lesson mode toggle — lives inside the card */}
-          <div className="ml-auto flex items-center gap-0.5 rounded-xl border border-white/[0.07] bg-white/[0.02] p-0.5">
-            <button
-              type="button"
-              aria-pressed={quickMode}
-              title="Quick — translation only, instant"
-              className={cn(
-                "flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium transition",
-                quickMode ? "bg-emerald-500/15 text-emerald-300" : "text-mist-500 hover:text-mist-200"
-              )}
-              onClick={() => onModeChange?.("quick")}
-            >
-              <Zap className="h-3 w-3" aria-hidden="true" />
-              Quick
-            </button>
-            <button
-              type="button"
-              aria-pressed={!quickMode}
-              title="Full Lesson — grammar, vocab, tips"
-              className={cn(
-                "flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium transition",
-                !quickMode ? "bg-emerald-500/15 text-emerald-300" : "text-mist-500 hover:text-mist-200"
-              )}
-              onClick={() => onModeChange?.("full")}
-            >
-              <BookOpen className="h-3 w-3" aria-hidden="true" />
-              Full
-            </button>
+          {/* Quick / Full Lesson mode toggle */}
+          <div className="ml-auto flex items-center gap-2">
+            {/* AI Provider switcher */}
+            <div className="flex items-center gap-0.5 rounded-xl border border-white/[0.07] bg-white/[0.02] p-0.5">
+              {(["gemini", "groq"] as AIProvider[]).map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  aria-pressed={provider === p}
+                  title={p === "gemini" ? "Google Gemini" : "Meta Llama 3.3 via Groq"}
+                  className={cn(
+                    "flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium transition",
+                    provider === p ? "bg-violet-500/20 text-violet-300" : "text-mist-500 hover:text-mist-200"
+                  )}
+                  onClick={() => setProvider(p)}
+                >
+                  {p === "gemini" ? (
+                    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/><path d="M12 6v6l4 2-1 1.73-5-2.73V6H12z"/></svg>
+                  ) : (
+                    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.93V15a1 1 0 0 0-2 0v1.93A8 8 0 0 1 4.07 9H6a1 1 0 0 0 0-2H4.07A8 8 0 0 1 11 4.07V6a1 1 0 0 0 2 0V4.07A8 8 0 0 1 19.93 11H18a1 1 0 0 0 0 2h1.93A8 8 0 0 1 13 19.93z"/></svg>
+                  )}
+                  {p === "gemini" ? "Gemini" : "Llama"}
+                </button>
+              ))}
+            </div>
+
+            {/* Quick / Full toggle */}
+            <div className="flex items-center gap-0.5 rounded-xl border border-white/[0.07] bg-white/[0.02] p-0.5">
+              <button
+                type="button"
+                aria-pressed={quickMode}
+                title="Quick — translation only, instant"
+                className={cn(
+                  "flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium transition",
+                  quickMode ? "bg-emerald-500/15 text-emerald-300" : "text-mist-500 hover:text-mist-200"
+                )}
+                onClick={() => onModeChange?.("quick")}
+              >
+                <Zap className="h-3 w-3" aria-hidden="true" />
+                Quick
+              </button>
+              <button
+                type="button"
+                aria-pressed={!quickMode}
+                title="Full Lesson — grammar, vocab, tips"
+                className={cn(
+                  "flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium transition",
+                  !quickMode ? "bg-emerald-500/15 text-emerald-300" : "text-mist-500 hover:text-mist-200"
+                )}
+                onClick={() => onModeChange?.("full")}
+              >
+                <BookOpen className="h-3 w-3" aria-hidden="true" />
+                Full
+              </button>
+            </div>
           </div>
         </div>
       </Card>
@@ -443,7 +470,7 @@ export function TranslatorPanel({
               <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col gap-4">
                 <div className="flex items-center gap-2 text-sm text-emerald-300">
                   <SoundWave active barCount={4} className="h-4" />
-                  Translating and preparing your lesson&hellip;
+                  {provider === "groq" ? "Llama 3.3" : "Gemini"} is preparing your lesson&hellip;
                 </div>
                 <Skeleton className="h-16 w-full" />
                 <Skeleton className="h-24 w-full" />

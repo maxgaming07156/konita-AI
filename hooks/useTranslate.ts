@@ -3,10 +3,14 @@
 import { useCallback, useState } from "react";
 import type { RequestState, TutorBreakdown } from "@/types";
 
+export type AIProvider = "gemini" | "groq";
+
 interface UseTranslateReturn {
   state: RequestState;
   result: TutorBreakdown | null;
   error: string | null;
+  provider: AIProvider;
+  setProvider: (p: AIProvider) => void;
   translate: (text: string, sourceLang: string, targetLang: string) => Promise<TutorBreakdown | null>;
   reset: () => void;
 }
@@ -15,6 +19,7 @@ export function useTranslate(): UseTranslateReturn {
   const [state, setState] = useState<RequestState>("idle");
   const [result, setResult] = useState<TutorBreakdown | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [provider, setProvider] = useState<AIProvider>("gemini");
 
   const translate = useCallback(
     async (text: string, sourceLang: string, targetLang: string): Promise<TutorBreakdown | null> => {
@@ -25,7 +30,7 @@ export function useTranslate(): UseTranslateReturn {
         const response = await fetch("/api/translate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text, sourceLang, targetLang }),
+          body: JSON.stringify({ text, sourceLang, targetLang, provider }),
         });
 
         const payload = (await response.json()) as { data?: TutorBreakdown; error?: string };
@@ -44,7 +49,7 @@ export function useTranslate(): UseTranslateReturn {
         return null;
       }
     },
-    []
+    [provider]
   );
 
   const reset = useCallback(() => {
@@ -53,5 +58,5 @@ export function useTranslate(): UseTranslateReturn {
     setError(null);
   }, []);
 
-  return { state, result, error, translate, reset };
+  return { state, result, error, provider, setProvider, translate, reset };
 }

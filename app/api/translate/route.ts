@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateJson } from "@/lib/gemini";
+import { groqGenerateJson } from "@/lib/groq";
 import { getLanguageByCode } from "@/lib/languages";
 import type { TutorBreakdown } from "@/types";
 
@@ -10,6 +11,7 @@ interface TranslateRequestBody {
   text: string;
   sourceLang: string;
   targetLang: string;
+  provider?: "gemini" | "groq";
 }
 
 const SYSTEM_INSTRUCTION = `You are Konita, an expert AI language tutor embedded inside a translation app.
@@ -53,6 +55,7 @@ export async function POST(request: NextRequest) {
     const text = body.text?.trim();
     const sourceLang = body.sourceLang ?? "auto";
     const targetLang = body.targetLang;
+    const provider = body.provider ?? "gemini";
 
     if (!text) {
       return NextResponse.json({ error: "Please enter some text to translate." }, { status: 400 });
@@ -68,12 +71,18 @@ export async function POST(request: NextRequest) {
     }
 
     const prompt = buildPrompt(text, sourceLang, targetLang);
-    const breakdown = await generateJson<TutorBreakdown>(prompt, SYSTEM_INSTRUCTION);
 
-    return NextResponse.json({ data: breakdown }, { status: 200 });
+    let breakdown: TutorBreakdown;
+    if (provider === "groq") {
+      breakdown = await groqGenerateJson<TutorBreakdown>(prompt, SYSTEM_INSTRUCTION);
+    } else {
+      breakdown = await generateJson<TutorBreakdown>(prompt, SYSTEM_INSTRUCTION);
+    }
+
+    return NextResponse.json({ data: breakdown, provider }, { status: 200 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Something went wrong while translating.";
-    const status = message.includes("GEMINI_API_KEY") ? 500 : 502;
+    const status = message.includes("GEMINI_API_KEY") || message.includes("GROQ_API_KEY") ? 500 : 502;
     return NextResponse.json({ error: message }, { status });
   }
 }
