@@ -175,9 +175,9 @@ export function ConversationMode({ targetLang, onTargetLangChange, voiceRate }: 
                   )}
                 </div>
                 {message.correction && (
-                  <div className="max-w-[85%] rounded-2xl border border-amber-400/20 bg-amber-400/[0.06] px-4 py-2.5 text-xs text-amber-200/90">
+                  <div className="max-w-[85%] rounded-2xl border border-amber-400/20 bg-amber-400/[0.06] px-4 py-2.5 text-xs dark:text-amber-200/90 text-amber-900/90">
                     <p className="font-medium">Suggested: {message.correction.corrected}</p>
-                    <p className="mt-1 text-amber-200/70">{message.correction.explanation}</p>
+                    <p className="mt-1 dark:text-amber-200/70 text-amber-900/70">{message.correction.explanation}</p>
                   </div>
                 )}
               </motion.div>

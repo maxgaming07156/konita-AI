@@ -106,14 +106,14 @@ export function TutorPageClient() {
               href="/flashcards"
               className="flex items-center gap-4 rounded-2xl border border-amber-400/20 bg-amber-400/[0.05] px-5 py-3.5 transition-colors hover:bg-amber-400/[0.09]"
             >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-400/10 text-amber-300">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-400/10 dark:text-amber-300 text-amber-800">
                 <Layers className="h-4 w-4" aria-hidden="true" />
               </div>
               <div className="flex-1 text-left">
-                <p className="text-sm font-medium text-amber-200">
+                <p className="text-sm font-medium dark:text-amber-200 text-amber-900">
                   {dueCount} word{dueCount === 1 ? "" : "s"} due for review today
                 </p>
-                <p className="text-xs text-amber-200/60">Tap to start your flashcard session →</p>
+                <p className="text-xs dark:text-amber-200/60 text-amber-900/60">Tap to start your flashcard session →</p>
               </div>
             </Link>
           </motion.div>

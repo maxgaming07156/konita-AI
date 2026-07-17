@@ -28,7 +28,7 @@ export function FeatureGrid() {
         >
           <CardGlow className="flex h-full flex-col justify-between p-0 overflow-hidden bg-base-900/50">
             <div className="p-6 md:p-8">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/10 dark:text-blue-400 text-blue-800">
                 <SpellCheck2 className="h-6 w-6" />
               </div>
               <h3 className="mt-5 font-display text-2xl font-medium text-mist-100">Understand the rules without a textbook</h3>
@@ -40,7 +40,7 @@ export function FeatureGrid() {
             {/* Mockup */}
             <div className="relative mx-8 mt-auto rounded-t-3xl border border-white/10 border-b-0 bg-base-800 p-6 shadow-2xl">
               <p className="text-xl text-mist-100">
-                Je ne sais pas <span className="relative inline-block cursor-pointer border-b-2 border-blue-500 text-blue-300 transition-colors hover:text-blue-200">
+                Je ne sais pas <span className="relative inline-block cursor-pointer border-b-2 border-blue-500 dark:text-blue-300 text-blue-800 transition-colors hover:dark:text-blue-200 text-blue-900">
                   pourquoi
                   <motion.div 
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -49,12 +49,12 @@ export function FeatureGrid() {
                     viewport={{ once: true }}
                     className="absolute bottom-full left-1/2 mb-3 w-64 -translate-x-1/2 rounded-2xl border border-blue-500/30 bg-blue-500/10 p-4 shadow-[0_8px_32px_rgba(59,130,246,0.15)] backdrop-blur-xl"
                   >
-                    <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-blue-400">
+                    <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider dark:text-blue-400 text-blue-800">
                       <span className="flex h-4 w-4 items-center justify-center rounded-full bg-blue-500/20 text-[10px]">G</span>
                       Conjunction
                     </span>
-                    <span className="mt-2 block text-sm leading-relaxed text-blue-100/90">
-                      Means &quot;why&quot;. Don&apos;t confuse it with <em className="italic text-blue-200/70">parce que</em> (because).
+                    <span className="mt-2 block text-sm leading-relaxed dark:text-blue-100/90 text-blue-900/90">
+                      Means &quot;why&quot;. Don&apos;t confuse it with <em className="italic dark:text-blue-200/70 text-blue-900/70">parce que</em> (because).
                     </span>
                   </motion.div>
                 </span> il a dit ça.
@@ -72,7 +72,7 @@ export function FeatureGrid() {
         >
           <CardGlow className="flex h-full flex-col justify-between p-0 overflow-hidden bg-base-900/50">
             <div className="p-6 md:p-8 pb-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 dark:text-amber-400 text-amber-800">
                 <BookMarked className="h-6 w-6" />
               </div>
               <h3 className="mt-5 font-display text-2xl font-medium text-mist-100">Expand your vocabulary effortlessly</h3>
@@ -103,7 +103,7 @@ export function FeatureGrid() {
               {/* Flashcard */}
               <div className="group relative rounded-3xl border border-amber-500/20 bg-amber-500/[0.04] p-5 shadow-[0_8px_32px_rgba(245,158,11,0.05)] backdrop-blur-md transition-all hover:bg-amber-500/[0.06]">
                 <div className="flex items-center justify-between">
-                  <span className="rounded bg-amber-500/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-300">Review</span>
+                  <span className="rounded bg-amber-500/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider dark:text-amber-300 text-amber-800">Review</span>
                   <div className="flex gap-1.5">
                     <motion.div initial={{ scale: 0 }} whileInView={{ scale: 1 }} transition={{ delay: 0.6 }} viewport={{ once: true }} className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></motion.div>
                     <motion.div initial={{ scale: 0 }} whileInView={{ scale: 1 }} transition={{ delay: 0.8 }} viewport={{ once: true }} className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></motion.div>
@@ -112,7 +112,7 @@ export function FeatureGrid() {
                 </div>
                 <div className="mt-5 text-center">
                   <p className="font-display text-2xl font-medium text-mist-100 transition-transform group-hover:-translate-y-1">desayunar</p>
-                  <p className="mt-2 text-sm text-amber-200/0 transition-all group-hover:text-amber-200/80">to have breakfast</p>
+                  <p className="mt-2 text-sm dark:text-amber-200/0 text-amber-900/0 transition-all group-hover:dark:text-amber-200/80 text-amber-900/80">to have breakfast</p>
                 </div>
               </div>
             </div>
@@ -128,7 +128,7 @@ export function FeatureGrid() {
         >
           <CardGlow className="flex h-full flex-col justify-between p-0 overflow-hidden bg-base-900/50">
             <div className="p-6 md:p-8 pb-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 text-purple-400">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 dark:text-purple-400 text-purple-800">
                 <MessageSquareText className="h-6 w-6" />
               </div>
               <h3 className="mt-5 font-display text-2xl font-medium text-mist-100">Practice naturally</h3>
@@ -139,7 +139,7 @@ export function FeatureGrid() {
 
             {/* Mockup */}
             <div className="mx-6 mb-6 mt-auto flex flex-col gap-3">
-              <div className="w-10/12 rounded-3xl rounded-tl-sm border border-purple-500/20 bg-purple-500/5 p-4 text-[15px] text-purple-100 shadow-sm backdrop-blur-xl">
+              <div className="w-10/12 rounded-3xl rounded-tl-sm border border-purple-500/20 bg-purple-500/5 p-4 text-[15px] dark:text-purple-100 text-purple-900 shadow-sm backdrop-blur-xl">
                 <p>Hello! How was your weekend?</p>
               </div>
               <div className="ml-auto w-10/12 rounded-3xl rounded-tr-sm bg-white/10 p-4 text-[15px] text-mist-100 shadow-sm backdrop-blur-xl">
@@ -151,8 +151,8 @@ export function FeatureGrid() {
                   transition={{ delay: 1.2, duration: 0.4 }}
                   className="flex items-start gap-2 rounded-xl border border-purple-500/30 bg-purple-500/10 p-3 text-sm shadow-[0_4px_20px_rgba(168,85,247,0.1)] overflow-hidden"
                 >
-                  <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-purple-400" />
-                  <span className="text-purple-200/90 leading-relaxed">Hint: Use the past tense <strong className="font-semibold text-purple-100">went</strong> for yesterday.</span>
+                  <Sparkles className="mt-0.5 h-4 w-4 shrink-0 dark:text-purple-400 text-purple-800" />
+                  <span className="dark:text-purple-200/90 text-purple-900/90 leading-relaxed">Hint: Use the past tense <strong className="font-semibold dark:text-purple-100 text-purple-900">went</strong> for yesterday.</span>
                 </motion.div>
               </div>
             </div>
@@ -170,7 +170,7 @@ export function FeatureGrid() {
           <CardGlow className="flex h-full flex-col justify-between p-0 overflow-hidden bg-base-900/50">
             <div className="flex flex-col md:flex-row h-full">
               <div className="p-6 md:p-8 md:w-1/2">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500/10 text-rose-400">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500/10 dark:text-rose-400 text-rose-800">
                   <Mic className="h-6 w-6" />
                 </div>
                 <h3 className="mt-5 font-display text-2xl font-medium text-mist-100">Speak confidently</h3>
@@ -186,13 +186,13 @@ export function FeatureGrid() {
                     <motion.span 
                       animate={{ opacity: [1, 0.5, 1] }} 
                       transition={{ duration: 1.5, repeat: Infinity }}
-                      className="text-xs font-semibold uppercase tracking-widest text-rose-400/80"
+                      className="text-xs font-semibold uppercase tracking-widest dark:text-rose-400/80 text-rose-800/80"
                     >
                       Listening...
                     </motion.span>
-                    <SoundWave active barCount={5} className="h-4 text-rose-400" />
+                    <SoundWave active barCount={5} className="h-4 dark:text-rose-400 text-rose-800" />
                   </div>
-                  <p className="mt-8 text-2xl font-medium text-rose-50">
+                  <p className="mt-8 text-2xl font-medium dark:text-rose-50 text-rose-900">
                     Où est la gare la plus proche ?
                   </p>
                   <div className="mt-10 flex justify-center">

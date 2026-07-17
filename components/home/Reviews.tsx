@@ -59,7 +59,7 @@ function StarRating({ count }: { count: number }) {
   return (
     <div className="flex gap-0.5" aria-label={`${count} out of 5 stars`}>
       {Array.from({ length: count }).map((_, i) => (
-        <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" aria-hidden="true" />
+        <Star key={i} className="h-3.5 w-3.5 fill-amber-400 dark:text-amber-400 text-amber-800" aria-hidden="true" />
       ))}
     </div>
   );
@@ -79,7 +79,7 @@ export function Reviews() {
           <div className="mb-1.5 flex flex-col gap-1">
             <div className="flex gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className="h-5 w-5 fill-amber-400 text-amber-400" aria-hidden="true" />
+                <Star key={i} className="h-5 w-5 fill-amber-400 dark:text-amber-400 text-amber-800" aria-hidden="true" />
               ))}
             </div>
             <p className="text-xs text-mist-500">Based on 2,400+ learner reviews</p>

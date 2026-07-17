@@ -26,7 +26,7 @@ export function RecentTranslations({ items, onSelect, onDelete, onClear }: Recen
           <button
             type="button"
             onClick={onClear}
-            className="rounded-lg px-2 py-1 text-xs font-medium text-mist-500 transition hover:bg-white/5 hover:text-red-300"
+            className="rounded-lg px-2 py-1 text-xs font-medium text-mist-500 transition hover:bg-white/5 hover:dark:text-red-300 text-red-800"
           >
             Clear all
           </button>
@@ -69,7 +69,7 @@ export function RecentTranslations({ items, onSelect, onDelete, onClear }: Recen
                   type="button"
                   onClick={() => onDelete(item.id)}
                   aria-label="Remove from recent translations"
-                  className="absolute right-2.5 top-3.5 rounded-lg p-1 text-mist-600 opacity-0 transition hover:bg-white/10 hover:text-red-300 group-hover:opacity-100"
+                  className="absolute right-2.5 top-3.5 rounded-lg p-1 text-mist-600 opacity-0 transition hover:bg-white/10 hover:dark:text-red-300 text-red-800 group-hover:opacity-100"
                 >
                   <X className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
