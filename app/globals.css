@@ -12,15 +12,15 @@
     --color-base-700: 226 232 240; /* #E2E8F0 */
     --color-base-600: 203 213 225; /* #CBD5E1 */
 
-    /* Mist text (inverted to dark) */
-    --color-mist-100: 15 23 42;    /* #0F172A */
-    --color-mist-200: 51 65 85;    /* #334155 */
-    --color-mist-300: 71 85 105;   /* #475569 */
-    --color-mist-400: 100 116 139; /* #64748B */
-    --color-mist-500: 148 163 184; /* #94A3B8 */
-    --color-mist-600: 203 213 225; /* #CBD5E1 */
-    --color-mist-700: 226 232 240; /* #E2E8F0 */
-    --color-mist-800: 241 245 249; /* #F1F5F9 */
+    /* Mist text (inverted to dark) - Darkened for better contrast */
+    --color-mist-100: 2 6 23;      /* #020617 */
+    --color-mist-200: 15 23 42;    /* #0F172A */
+    --color-mist-300: 30 41 59;    /* #1E293B */
+    --color-mist-400: 51 65 85;    /* #334155 */
+    --color-mist-500: 71 85 105;   /* #475569 */
+    --color-mist-600: 100 116 139; /* #64748B */
+    --color-mist-700: 148 163 184; /* #94A3B8 */
+    --color-mist-800: 203 213 225; /* #CBD5E1 */
 
     /* Emerald (darkened for light mode contrast) */
     --color-emerald-950: 240 253 244;
