@@ -3,6 +3,7 @@ import { generateJson } from "@/lib/gemini";
 import { getLanguageByCode } from "@/lib/languages";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 interface WordOfDayResponse {
   phrase: string;

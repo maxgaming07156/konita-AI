@@ -3,6 +3,7 @@ import { generateText } from "@/lib/gemini";
 import { getLanguageByCode } from "@/lib/languages";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 interface QuickTranslateRequestBody {
   text: string;

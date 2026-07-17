@@ -4,6 +4,7 @@ import { getLanguageByCode } from "@/lib/languages";
 import type { TutorBreakdown } from "@/types";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 interface TranslateRequestBody {
   text: string;

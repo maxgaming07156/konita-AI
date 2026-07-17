@@ -4,6 +4,7 @@ import { getLanguageByCode } from "@/lib/languages";
 import type { ConversationMessage } from "@/types";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 interface ConversationRequestBody {
   targetLang: string;
