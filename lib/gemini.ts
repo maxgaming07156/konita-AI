@@ -24,8 +24,8 @@ function getClient(key: string): GoogleGenAI {
 // Model fallback list. If the primary model is completely overloaded globally,
 // we automatically gracefully degrade to the lighter, faster 8B model which has much higher capacity.
 const MODELS = [
-  process.env.GEMINI_MODEL || "gemini-1.5-flash",
-  "gemini-1.5-flash-8b"
+  process.env.GEMINI_MODEL || "gemini-flash-latest",
+  "gemini-pro-latest"
 ];
 
 /**
