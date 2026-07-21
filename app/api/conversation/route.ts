@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateJson } from "@/lib/gemini";
+import { groqGenerateJson } from "@/lib/groq";
 import { getLanguageByCode } from "@/lib/languages";
 import type { ConversationMessage } from "@/types";
 
@@ -10,6 +11,7 @@ interface ConversationRequestBody {
   targetLang: string;
   history: Pick<ConversationMessage, "role" | "content">[];
   message: string;
+  provider?: "gemini" | "groq";
 }
 
 interface ConversationAiResponse {
@@ -55,6 +57,7 @@ export async function POST(request: NextRequest) {
     const message = body.message?.trim();
     const targetLang = body.targetLang;
     const history = Array.isArray(body.history) ? body.history : [];
+    const provider = body.provider ?? "gemini";
 
     if (!message) {
       return NextResponse.json({ error: "Please type a message to continue the conversation." }, { status: 400 });
@@ -67,9 +70,15 @@ export async function POST(request: NextRequest) {
     }
 
     const prompt = buildPrompt(targetLang, history.slice(-10), message);
-    const aiResponse = await generateJson<ConversationAiResponse>(prompt, SYSTEM_INSTRUCTION);
+    
+    let aiResponse: ConversationAiResponse;
+    if (provider === "groq") {
+      aiResponse = await groqGenerateJson<ConversationAiResponse>(prompt, SYSTEM_INSTRUCTION);
+    } else {
+      aiResponse = await generateJson<ConversationAiResponse>(prompt, SYSTEM_INSTRUCTION);
+    }
 
-    return NextResponse.json({ data: aiResponse }, { status: 200 });
+    return NextResponse.json({ data: aiResponse, provider }, { status: 200 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Something went wrong. Please try again.";
     const status = message.includes("GEMINI_API_KEY") ? 500 : 502;

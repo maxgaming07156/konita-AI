@@ -15,6 +15,7 @@ import { toSpeechLocale } from "@/lib/languages";
 import { cn, generateId } from "@/lib/utils";
 import { recordConversationStat } from "@/lib/storage";
 import type { ConversationMessage } from "@/types";
+import type { AIProvider } from "@/hooks/useTranslate";
 
 interface ConversationAiResponse {
   reply: string;
@@ -31,6 +32,7 @@ export function ConversationMode({ targetLang, onTargetLangChange, voiceRate }: 
   const [messages, setMessages] = useState<ConversationMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [provider, setProvider] = useState<AIProvider>("gemini");
   const scrollRef = useRef<HTMLDivElement>(null);
   const { showToast } = useToast();
   const { isSupported: speechSupported, isSpeaking, speak } = useSpeechSynthesis();
@@ -73,6 +75,7 @@ export function ConversationMode({ targetLang, onTargetLangChange, voiceRate }: 
           targetLang,
           message: trimmed,
           history: nextMessages.map((m) => ({ role: m.role, content: m.content })),
+          provider,
         }),
       });
 
@@ -128,7 +131,29 @@ export function ConversationMode({ targetLang, onTargetLangChange, voiceRate }: 
             <p className="text-xs text-mist-500">Chat naturally &mdash; Konita corrects you as you go.</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-0.5 rounded-xl border border-white/[0.07] bg-white/[0.02] p-0.5">
+            {(["gemini", "groq"] as AIProvider[]).map((p) => (
+              <button
+                key={p}
+                type="button"
+                aria-pressed={provider === p}
+                title={p === "gemini" ? "Google Gemini" : "Meta Llama 3.3 via Groq"}
+                className={cn(
+                  "flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium transition",
+                  provider === p ? "bg-violet-500/20 text-violet-300" : "text-mist-500 hover:text-mist-200"
+                )}
+                onClick={() => setProvider(p)}
+              >
+                {p === "gemini" ? (
+                  <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/><path d="M12 6v6l4 2-1 1.73-5-2.73V6H12z"/></svg>
+                ) : (
+                  <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.93V15a1 1 0 0 0-2 0v1.93A8 8 0 0 1 4.07 9H6a1 1 0 0 0 0-2H4.07A8 8 0 0 1 11 4.07V6a1 1 0 0 0 2 0V4.07A8 8 0 0 1 19.93 11H18a1 1 0 0 0 0 2h1.93A8 8 0 0 1 13 19.93z"/></svg>
+                )}
+                {p === "gemini" ? "Gemini" : "Llama"}
+              </button>
+            ))}
+          </div>
           <LanguageSelect value={targetLang} onChange={onTargetLangChange} excludeAuto label="Practice language" className="w-44" />
           <Button variant="ghost" size="icon" onClick={handleReset} aria-label="Restart conversation" title="Restart conversation">
             <RotateCcw className="h-4 w-4" aria-hidden="true" />
